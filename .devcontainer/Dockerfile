@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk-noble
+FROM eclipse-temurin:26-jdk-noble
 
 ARG USERNAME=vscode
 
@@ -17,6 +17,22 @@ RUN apt-get update \
     && chmod 0440 "/etc/sudoers.d/${USERNAME}" \
     && npm install -g @openai/codex \
     && rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    sources_url="https://github.com/adoptium/temurin26-binaries/releases/download/jdk-26%2B35/OpenJDK26U-jdk-sources_26_35.tar.gz"; \
+    sources_sha256="f2efe308f37809127c96eb73ffba2d2484013aac18777d09079cea39091f0d08"; \
+    curl -fsSL "$sources_url" -o /tmp/jdk-sources.tar.gz; \
+    echo "$sources_sha256  /tmp/jdk-sources.tar.gz" | sha256sum -c -; \
+    mkdir -p /tmp/jdk-sources /tmp/jdk-srczip; \
+    tar -xzf /tmp/jdk-sources.tar.gz -C /tmp/jdk-sources --strip-components=1; \
+    for classes in /tmp/jdk-sources/src/*/share/classes; do \
+      module="$(basename "$(dirname "$(dirname "$classes")")")"; \
+      mkdir -p "/tmp/jdk-srczip/$module"; \
+      cp -R "$classes"/. "/tmp/jdk-srczip/$module"/; \
+    done; \
+    cd /tmp/jdk-srczip; \
+    jar --create --file /opt/java/openjdk/lib/src.zip .; \
+    rm -rf /tmp/jdk-sources /tmp/jdk-srczip /tmp/jdk-sources.tar.gz
 
 RUN set -eux; \
     arch="$(dpkg --print-architecture)"; \
