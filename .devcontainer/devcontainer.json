@@ -19,5 +19,5 @@
       }
     }
   },
-  "postCreateCommand": "sbt update && scala-cli --version && sbt --version"
+  "postCreateCommand": "scala3 -version && scala3-compiler -version && scala-cli --version && sbt update && sbt --version"
 }

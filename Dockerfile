@@ -1,4 +1,4 @@
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:26-jdk AS build
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN sbt update
 COPY src ./src
 RUN sbt assembly
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:26-jre
 
 WORKDIR /app
 

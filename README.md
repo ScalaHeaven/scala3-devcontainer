@@ -4,8 +4,9 @@ This workspace is initialized for Scala 3 development in a VS Code devcontainer.
 
 ## Included
 
-- Java 21 base image
+- Java 26 base images
 - sbt
+- Scala 3 runner and compiler
 - Scala CLI
 - Metals extension for VS Code
 - Minimal Scala 3 sbt project
@@ -17,6 +18,8 @@ Open the folder in VS Code and choose **Dev Containers: Reopen in Container**.
 Inside the container:
 
 ```bash
+scala3 -version
+scala3-compiler -version
 sbt run
 scala-cli run src/main/scala/Main.scala
 ```
