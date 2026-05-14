@@ -7,22 +7,25 @@
   "updateRemoteUserUID": true,
   "remoteUser": "vscode",
   "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/tmp/host-ssh,type=bind,readonly"
+    "source=${localEnv:HOME}/.ssh,target=/tmp/host-ssh,type=bind,readonly",
+    "source=${localEnv:HOME}/.codex,target=/tmp/host-codex,type=bind,readonly"
   ],
   "customizations": {
     "vscode": {
       "extensions": [
+        "openai.chatgpt",
         "scalameta.metals",
         "scala-lang.scala"
       ],
       "settings": {
         "editor.formatOnSave": true,
+        "metals.defaultBspToBuildTool": true,
         "metals.serverProperties": [
           "-Xmx2G"
         ]
       }
     }
   },
-  "postStartCommand": "git config --global user.name 'Yehor Smoliakov' && git config --global user.email 'egorsmkv@gmail.com' && sudo chown vscode:vscode /workspaces/scala3-devcontainer && if [ -d /workspaces/scala3-devcontainer/.git ]; then sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.git; fi && mkdir -p /home/vscode/.ssh && if [ -d /tmp/host-ssh ]; then sudo cp /tmp/host-ssh/id_ed25519 /tmp/host-ssh/id_ed25519.pub /home/vscode/.ssh/ 2>/dev/null || true; sudo cp /tmp/host-ssh/known_hosts /home/vscode/.ssh/ 2>/dev/null || true; sudo chown -R vscode:vscode /home/vscode/.ssh; chmod 700 /home/vscode/.ssh && chmod 600 /home/vscode/.ssh/id_ed25519 2>/dev/null || true; chmod 644 /home/vscode/.ssh/id_ed25519.pub /home/vscode/.ssh/known_hosts 2>/dev/null || true; fi && sudo mkdir -p /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp && sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp",
+  "postStartCommand": "bash .devcontainer/post-start.sh",
   "postCreateCommand": "node --version && npm --version && codex --version && scala3 -version && scala3-compiler -version && scala-cli --version && sbt update && sbt --version"
 }
