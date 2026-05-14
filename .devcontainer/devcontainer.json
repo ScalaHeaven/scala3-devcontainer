@@ -1,0 +1,23 @@
+{
+  "name": "Scala 3 Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scalameta.metals",
+        "scala-lang.scala"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "metals.serverProperties": [
+          "-Xmx2G"
+        ]
+      }
+    }
+  },
+  "postCreateCommand": "sbt update && scala-cli --version && sbt --version"
+}
