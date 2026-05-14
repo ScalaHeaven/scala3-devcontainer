@@ -28,7 +28,10 @@ RUN set -eux; \
     curl -fL "https://github.com/coursier/coursier/releases/latest/download/cs-${coursier_arch}.gz" \
       | gzip -d > /usr/local/bin/cs; \
     chmod +x /usr/local/bin/cs; \
-    cs install scala3 scala3-compiler scala-cli sbt --install-dir /usr/local/bin; \
+    mkdir -p "/home/${USERNAME}/.cache/coursier"; \
+    COURSIER_CACHE="/home/${USERNAME}/.cache/coursier" cs install scala3-compiler scala-cli --install-dir /usr/local/bin; \
+    printf '%s\n' '#!/usr/bin/env sh' 'export COURSIER_CACHE="${COURSIER_CACHE:-/home/vscode/.cache/coursier}"' 'exec /usr/local/bin/cs launch sbt -- "$@"' > /usr/local/bin/sbt; \
+    chmod +x /usr/local/bin/sbt; \
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.cache" || true
 
 USER ${USERNAME}

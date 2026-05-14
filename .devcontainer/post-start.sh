@@ -9,6 +9,18 @@ git config --global user.email "egorsmkv@gmail.com"
 sudo chown -R vscode:vscode "$workspace"
 mkdir -p "$workspace/.metals"
 
+if grep -q '/root/.cache/coursier' /usr/local/bin/scala3 /usr/local/bin/scala3-compiler /usr/local/bin/scala-cli /usr/local/bin/sbt 2>/dev/null; then
+  sudo rm -f /usr/local/bin/scala3 /usr/local/bin/scala3-compiler /usr/local/bin/scala-cli /usr/local/bin/sbt
+  sudo mkdir -p /home/vscode/.cache/coursier
+  sudo env COURSIER_CACHE=/home/vscode/.cache/coursier \
+    cs install scala3-compiler scala-cli --install-dir /usr/local/bin
+  printf '%s\n' '#!/usr/bin/env sh' \
+    'export COURSIER_CACHE="${COURSIER_CACHE:-/home/vscode/.cache/coursier}"' \
+    'exec /usr/local/bin/cs launch sbt -- "$@"' | sudo tee /usr/local/bin/sbt >/dev/null
+  sudo chmod +x /usr/local/bin/sbt
+  sudo chown -R vscode:vscode /home/vscode/.cache
+fi
+
 mkdir -p /home/vscode/.ssh
 if [ -d /tmp/host-ssh ]; then
   sudo cp /tmp/host-ssh/id_ed25519 /tmp/host-ssh/id_ed25519.pub /home/vscode/.ssh/ 2>/dev/null || true
