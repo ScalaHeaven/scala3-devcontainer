@@ -4,7 +4,7 @@ ARG USERNAME=vscode
 
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get install -y --no-install-recommends curl gzip ca-certificates git sudo gnupg \
+    && apt-get install -y --no-install-recommends curl gzip ca-certificates git openssh-client sudo gnupg \
     && install -d -m 0755 /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
       | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \

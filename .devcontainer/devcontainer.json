@@ -6,6 +6,9 @@
   },
   "updateRemoteUserUID": true,
   "remoteUser": "vscode",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/tmp/host-ssh,type=bind,readonly"
+  ],
   "customizations": {
     "vscode": {
       "extensions": [
@@ -20,6 +23,6 @@
       }
     }
   },
-  "postStartCommand": "sudo chown vscode:vscode /workspaces/scala3-devcontainer && if [ -d /workspaces/scala3-devcontainer/.git ]; then sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.git; fi && sudo mkdir -p /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp && sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp",
+  "postStartCommand": "sudo chown vscode:vscode /workspaces/scala3-devcontainer && if [ -d /workspaces/scala3-devcontainer/.git ]; then sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.git; fi && mkdir -p /home/vscode/.ssh && if [ -d /tmp/host-ssh ]; then cp /tmp/host-ssh/id_ed25519 /tmp/host-ssh/id_ed25519.pub /home/vscode/.ssh/ 2>/dev/null || true; cp /tmp/host-ssh/known_hosts /home/vscode/.ssh/ 2>/dev/null || true; chmod 700 /home/vscode/.ssh && chmod 600 /home/vscode/.ssh/id_ed25519 2>/dev/null || true; chmod 644 /home/vscode/.ssh/id_ed25519.pub /home/vscode/.ssh/known_hosts 2>/dev/null || true; fi && sudo mkdir -p /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp && sudo chown -R vscode:vscode /workspaces/scala3-devcontainer/.metals /workspaces/scala3-devcontainer/.bloop /workspaces/scala3-devcontainer/.bsp",
   "postCreateCommand": "node --version && npm --version && codex --version && scala3 -version && scala3-compiler -version && scala-cli --version && sbt update && sbt --version"
 }
