@@ -84,6 +84,139 @@ plugin, so do not assume `sbt scalafmtAll` is available.
 - Update `README.md` whenever commands, tool versions, startup behavior, or the
   mental model for users changes.
 
+## Scala 3 Code Style
+
+Prefer clear, typed, idiomatic Scala 3 over cleverness. Code in this repository
+should be easy for newcomers to read and easy for tools to analyze.
+
+### Structure And Naming
+
+- Use descriptive names for values, functions, types, and files. Avoid
+  abbreviations unless they are standard in the domain.
+- Use `UpperCamelCase` for classes, traits, objects, enums, and type aliases.
+- Use `lowerCamelCase` for methods, values, variables, parameters, and packages.
+- Keep one primary public type per file when the project grows beyond examples.
+  Match the file name to that type.
+- Prefer small functions with one clear responsibility. Split logic when a
+  function needs unrelated comments to explain its phases.
+- Put domain logic in named functions, classes, traits, or objects. Keep `@main`
+  methods thin and focused on wiring, parsing input, and reporting output.
+
+### Types And APIs
+
+- Let local values infer obvious types, but write explicit return types on public
+  methods, non-trivial private methods, recursive methods, and extension
+  methods.
+- Prefer immutable `val` values. Use `var` only for tightly scoped mutation where
+  it is simpler and still easy to reason about.
+- Prefer algebraic data types with `enum`, `case class`, and sealed traits over
+  loosely typed strings, maps, or flags.
+- Use `Option` for optional values instead of `null`.
+- Use `Either`, `Try`, or a small domain error type for recoverable failures
+  instead of throwing exceptions across normal control flow.
+- Throw exceptions only for programmer errors, impossible states, or integration
+  boundaries where an exception is the expected API.
+- Avoid `Any`, `asInstanceOf`, reflection, and unchecked pattern matches unless
+  there is a strong reason and the code explains the boundary.
+- Avoid public APIs that expose mutable collections. Prefer immutable collections
+  from the Scala standard library.
+
+### Scala 3 Language Features
+
+- Use significant indentation consistently, as already shown in
+  `src/main/scala/Main.scala`.
+- Use `extension` methods only when they make call sites materially clearer and
+  the extension is close to the related domain.
+- Use `given` and `using` deliberately. They are appropriate for typeclass
+  instances, contextual configuration, or integration with libraries, not as a
+  hidden dependency mechanism for ordinary values.
+- Use `export` sparingly, mainly to provide a small facade over an internal
+  implementation.
+- Prefer `enum` for closed sets of alternatives. Add methods on the enum when
+  behavior naturally belongs with the alternatives.
+- Prefer pattern matching for algebraic data types, but keep matches exhaustive
+  and avoid large nested matches. Extract helper functions when branches grow.
+- Do not introduce advanced type-level programming unless the requested feature
+  genuinely benefits from it and the resulting API remains understandable.
+
+### Collections And Control Flow
+
+- Prefer collection transformations such as `map`, `flatMap`, `filter`,
+  `collect`, `foldLeft`, and `exists` when they read directly.
+- Prefer a straightforward `for` expression for multi-step `Option`, `Either`,
+  `Try`, `Future`, or collection workflows.
+- Avoid using `map` only for side effects. Use `foreach` for side effects.
+- Avoid deeply chained transformations when intermediate names would make the
+  code clearer.
+- Be mindful of partial methods such as `head`, `tail`, `last`, and `.get` on
+  `Option`. Prefer safe alternatives such as pattern matching, `headOption`, or
+  `fold`.
+
+### Effects, IO, And Concurrency
+
+- Keep side effects at the edges of the program. Pure functions should take
+  inputs and return values without printing, reading files, mutating global
+  state, or depending on the current time.
+- If adding concurrency or asynchronous behavior, choose a clear model and keep
+  it consistent. Do not mix `Future`, threads, blocking calls, and callbacks
+  casually.
+- Mark blocking operations clearly and isolate them from pure domain logic.
+- Avoid global mutable state. If shared state is required, make ownership and
+  synchronization explicit.
+
+### Error Messages And User Output
+
+- Make user-facing messages specific and actionable.
+- Include enough context in failures to diagnose the problem, but do not print
+  secrets, tokens, private keys, or local machine-specific credentials.
+- Keep example application output stable unless the task is specifically about
+  changing behavior.
+
+### Dependencies
+
+- Prefer the Scala standard library for small features.
+- Add dependencies only when they reduce real complexity or provide a proven
+  implementation for a non-trivial concern.
+- Keep dependency versions explicit in `build.sbt` or a deliberate version
+  management file if one is introduced later.
+- When adding an sbt plugin, document what it is for and update validation
+  commands if it adds or changes tasks.
+
+### Testing Expectations
+
+- This repository currently has no test framework. If adding meaningful business
+  logic or behavior with edge cases, add a test framework instead of relying only
+  on `sbt run`.
+- Prefer focused unit tests around pure functions and domain behavior.
+- Test error cases, boundary inputs, and at least one representative successful
+  path.
+- Keep tests deterministic. Avoid depending on wall-clock time, host-specific
+  paths, network access, or command execution order unless that is the behavior
+  under test.
+
+### Comments And Documentation
+
+- Write comments to explain why a non-obvious decision exists, not to restate
+  what each line does.
+- Keep Scaladoc concise and useful for public APIs once the project exposes
+  reusable types or functions.
+- When changing environment behavior, update `README.md` and this file so agents
+  and humans have the same source of truth.
+
+## Quality Bar For Agent Changes
+
+Before finishing a code change, agents should check:
+
+- The code compiles with `sbt -Dsbt.batch=true compile`.
+- Formatting is clean with `scala-cli fmt --check src/main/scala/Main.scala`, or
+  with the equivalent expanded path set if more Scala files are added.
+- New behavior is covered by tests when the change adds non-trivial logic.
+- Public entry point names still match `build.sbt`, `.vscode/launch.json`,
+  `README.md`, and Docker documentation.
+- No generated build output or local tool state is included in the change.
+- The implementation follows existing repository patterns before introducing new
+  abstractions, dependencies, or tooling.
+
 ## Generated And Local Files
 
 Do not hand-edit generated or local state unless specifically investigating tool
