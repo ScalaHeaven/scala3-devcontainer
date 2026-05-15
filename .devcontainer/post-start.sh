@@ -116,11 +116,15 @@ metals_mcp_pid="$metals_mcp_dir/metals-mcp.pid"
 metals_mcp_log="$metals_mcp_dir/metals-mcp.log"
 mkdir -p "$metals_mcp_dir"
 
+metals_mcp_is_listening() {
+  curl -sS --max-time 2 "http://127.0.0.1:${metals_mcp_port}/mcp" >/dev/null 2>&1
+}
+
 if [ "${START_METALS_MCP:-1}" != "1" ]; then
   exit 0
 fi
 
-if [ -f "$metals_mcp_pid" ] && kill -0 "$(cat "$metals_mcp_pid")" 2>/dev/null; then
+if [ -f "$metals_mcp_pid" ] && kill -0 "$(cat "$metals_mcp_pid")" 2>/dev/null && metals_mcp_is_listening; then
   exit 0
 fi
 
@@ -128,12 +132,27 @@ COURSIER_CACHE=/home/vscode/.cache/coursier \
   cs fetch org.scala-sbt:sbt-launch:1.12.11 io.get-coursier.sbt:sbt-runner:0.2.0 >/dev/null || true
 
 rm -f "$metals_mcp_pid"
-nohup metals-mcp \
-  --workspace "$workspace" \
-  --port "$metals_mcp_port" \
-  --transport http \
-  --target-build-tool sbt \
-  --default-bsp-to-build-tool \
-  --auto-import-builds all \
-  >"$metals_mcp_log" 2>&1 &
+setsid sh -c '
+  exec </dev/null
+  exec metals-mcp \
+    --workspace "$1" \
+    --port "$2" \
+    --transport http \
+    --target-build-tool sbt \
+    --default-bsp-to-build-tool \
+    --auto-import-builds all
+' sh "$workspace" "$metals_mcp_port" >"$metals_mcp_log" 2>&1 &
 echo "$!" > "$metals_mcp_pid"
+
+for _ in $(seq 1 30); do
+  if metals_mcp_is_listening; then
+    exit 0
+  fi
+  if ! kill -0 "$(cat "$metals_mcp_pid")" 2>/dev/null; then
+    break
+  fi
+  sleep 1
+done
+
+printf 'metals-mcp did not start on port %s; see %s\n' "$metals_mcp_port" "$metals_mcp_log" >&2
+exit 1
