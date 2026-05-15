@@ -4,6 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
+  "initializeCommand": "mkdir -p .metals && chmod -R a+rwX .metals .bsp target project/target 2>/dev/null || true",
   "updateRemoteUserUID": true,
   "remoteUser": "vscode",
   "mounts": [

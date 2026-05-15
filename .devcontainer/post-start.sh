@@ -8,6 +8,7 @@ git config --global user.email "egorsmkv@gmail.com"
 
 sudo chown -R vscode:vscode "$workspace"
 mkdir -p "$workspace/.metals"
+chmod -R a+rwX "$workspace/.metals" "$workspace/.bsp" "$workspace/target" "$workspace/project/target" 2>/dev/null || true
 
 if grep -q '/root/.cache/coursier' /usr/local/bin/scala3 /usr/local/bin/scala3-compiler /usr/local/bin/scala-cli /usr/local/bin/sbt 2>/dev/null; then
   sudo rm -f /usr/local/bin/scala3 /usr/local/bin/scala3-compiler /usr/local/bin/scala-cli /usr/local/bin/sbt
