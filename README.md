@@ -18,7 +18,6 @@ Open the folder in VS Code and choose **Dev Containers: Reopen in Container**.
 Inside the container:
 
 ```bash
-scala3 -version
 scala3-compiler -version
 sbt run
 scala-cli run src/main/scala/Main.scala
