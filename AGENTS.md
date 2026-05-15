@@ -22,7 +22,8 @@ just application code.
 - `build.sbt`: main sbt build definition. Pins Scala `3.8.3`, enables
   SemanticDB, sets project metadata, and configures `sbt-assembly`.
 - `project/build.properties`: pins sbt `1.12.11`.
-- `project/plugins.sbt`: declares sbt plugins, currently `sbt-assembly`.
+- `project/plugins.sbt`: declares sbt plugins, currently `sbt-assembly` and
+  `sbt-scalafmt`.
 - `src/main/scala/Main.scala`: example Scala 3 application with the `hello`
   main class.
 - `.scalafmt.conf`: Scala formatting config, using Scalafmt `3.10.7` and the
@@ -57,12 +58,9 @@ docker run --rm scala3-devcontainer
 For formatting, prefer the configured Scala formatter:
 
 ```bash
-scala-cli fmt --check src/main/scala/Main.scala
-scala-cli fmt src/main/scala/Main.scala
+sbt -Dsbt.batch=true scalafmtCheckAll
+sbt -Dsbt.batch=true scalafmtAll
 ```
-
-The repository has `.scalafmt.conf` but does not currently add the sbt-scalafmt
-plugin, so do not assume `sbt scalafmtAll` is available.
 
 ## Coding Guidelines
 
@@ -209,8 +207,7 @@ should be easy for newcomers to read and easy for tools to analyze.
 Before finishing a code change, agents should check:
 
 - The code compiles with `sbt -Dsbt.batch=true compile`.
-- Formatting is clean with `scala-cli fmt --check src/main/scala/Main.scala`, or
-  with the equivalent expanded path set if more Scala files are added.
+- Formatting is clean with `sbt -Dsbt.batch=true scalafmtCheckAll`.
 - New behavior is covered by tests when the change adds non-trivial logic.
 - Public entry point names still match `build.sbt`, `.vscode/launch.json`,
   `README.md`, and Docker documentation.
@@ -257,7 +254,7 @@ At the time this file was added, these commands passed:
 ```bash
 sbt -Dsbt.batch=true compile
 sbt -Dsbt.batch=true assembly
-scala-cli fmt --check src/main/scala/Main.scala
+sbt -Dsbt.batch=true scalafmtCheckAll
 ```
 
 JDK 26 emits warnings about deprecated/restricted JVM APIs while sbt starts.

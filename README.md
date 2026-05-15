@@ -71,6 +71,8 @@ sbt is the main build tool for this repository. It is responsible for:
 - compiling code
 - running the application with `sbt run`
 - packaging the application with `sbt assembly`
+- checking and applying formatting with `sbt scalafmtCheckAll` and
+  `sbt scalafmtAll`
 - exposing project metadata to Metals through BSP
 
 The project pins sbt in `project/build.properties`:
@@ -150,6 +152,18 @@ version = "3.10.7"
 runner.dialect = scala3
 ```
 
+Check formatting with:
+
+```bash
+sbt -Dsbt.batch=true scalafmtCheckAll
+```
+
+Format Scala sources with:
+
+```bash
+sbt -Dsbt.batch=true scalafmtAll
+```
+
 VS Code has `editor.formatOnSave` enabled in the devcontainer settings, so Scala
 files are formatted automatically when the formatter is available.
 
@@ -196,14 +210,17 @@ compatibility can change between versions.
 
 ### `project/plugins.sbt`
 
-This adds sbt plugins. The current plugin is:
+This adds sbt plugins:
 
 ```scala
 addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "2.3.1")
+
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.5")
 ```
 
 `sbt-assembly` builds one runnable JAR containing the application and its
-runtime dependencies.
+runtime dependencies. `sbt-scalafmt` adds sbt tasks for checking and applying
+the repository's Scalafmt configuration.
 
 ### `.vscode/launch.json`
 
