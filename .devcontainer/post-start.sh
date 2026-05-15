@@ -6,7 +6,6 @@ workspace=/workspaces/scala3-devcontainer
 git config --global user.name "Yehor Smoliakov"
 git config --global user.email "egorsmkv@gmail.com"
 
-sudo chown -R vscode:vscode "$workspace"
 mkdir -p "$workspace/.metals"
 chmod -R a+rwX "$workspace/.metals" "$workspace/.bsp" "$workspace/target" "$workspace/project/target" 2>/dev/null || true
 
