@@ -1,7 +1,6 @@
 ThisBuild / scalaVersion := "3.8.3"
 
 ThisBuild / semanticdbEnabled := true
-ThisBuild / semanticdbVersion := scalafixSemanticdb.revision
 
 lazy val root = (project in file("."))
   .settings(
