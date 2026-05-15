@@ -6,6 +6,9 @@ workspace=/workspaces/scala3-devcontainer
 repair_workspace_permissions() {
   sudo mkdir -p "$workspace/.metals" "$workspace/.bsp" "$workspace/target" "$workspace/project/target"
   sudo find "$workspace" -type d -name .scala-build -prune -exec rm -rf {} + 2>/dev/null || true
+  sudo chown -R vscode:vscode "$workspace" 2>/dev/null || true
+  sudo find "$workspace" -type d -exec chmod u+rwx {} + 2>/dev/null || true
+  sudo find "$workspace" -type f -exec chmod u+rw {} + 2>/dev/null || true
   sudo find "$workspace" \
     \( -type d -name .bloop -o -type d -name .scala-build -o -type d -name target \) \
     -prune -exec chown -R vscode:vscode {} + 2>/dev/null || true
@@ -55,13 +58,26 @@ fi
 
 mkdir -p /home/vscode/.ssh
 if [ -d /tmp/host-ssh ]; then
-  sudo cp /tmp/host-ssh/id_ed25519 /tmp/host-ssh/id_ed25519.pub /home/vscode/.ssh/ 2>/dev/null || true
-  sudo cp /tmp/host-ssh/known_hosts /home/vscode/.ssh/ 2>/dev/null || true
+  for file in \
+    config \
+    known_hosts \
+    known_hosts.old \
+    id_ed25519 \
+    id_ed25519.pub \
+    id_rsa \
+    id_rsa.pub \
+    id_ecdsa \
+    id_ecdsa.pub; do
+    sudo cp "/tmp/host-ssh/$file" /home/vscode/.ssh/ 2>/dev/null || true
+  done
 fi
 sudo chown -R vscode:vscode /home/vscode/.ssh
 chmod 700 /home/vscode/.ssh
-chmod 600 /home/vscode/.ssh/id_ed25519 2>/dev/null || true
-chmod 644 /home/vscode/.ssh/id_ed25519.pub /home/vscode/.ssh/known_hosts 2>/dev/null || true
+chmod 600 /home/vscode/.ssh/config /home/vscode/.ssh/id_ed25519 /home/vscode/.ssh/id_rsa /home/vscode/.ssh/id_ecdsa 2>/dev/null || true
+chmod 644 /home/vscode/.ssh/id_ed25519.pub /home/vscode/.ssh/id_rsa.pub /home/vscode/.ssh/id_ecdsa.pub /home/vscode/.ssh/known_hosts /home/vscode/.ssh/known_hosts.old 2>/dev/null || true
+if ! ssh-keygen -F github.com -f /home/vscode/.ssh/known_hosts >/dev/null 2>&1; then
+  ssh-keyscan github.com >> /home/vscode/.ssh/known_hosts 2>/dev/null || true
+fi
 
 mkdir -p /home/vscode/.codex
 if [ -d /tmp/host-codex ]; then
