@@ -53,14 +53,8 @@ RUN set -eux; \
 
 # Install Coursier, then use it for Scala tools and an sbt wrapper.
 RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    case "$arch" in \
-      amd64) coursier_arch="x86_64-pc-linux" ;; \
-      arm64) coursier_arch="aarch64-pc-linux" ;; \
-      *) echo "Unsupported architecture: $arch" >&2; exit 1 ;; \
-    esac; \
-    curl -fL "https://github.com/coursier/coursier/releases/latest/download/cs-${coursier_arch}.gz" \
-      | gzip -d > /usr/local/bin/cs; \
+    curl -fsSL "https://github.com/coursier/coursier/releases/latest/download/coursier" \
+      -o /usr/local/bin/cs; \
     chmod +x /usr/local/bin/cs; \
     COURSIER_CACHE="/home/${USERNAME}/.cache/coursier" cs install scala3-compiler scala-cli metals-mcp --install-dir /usr/local/bin; \
     printf '%s\n' '#!/usr/bin/env sh' 'export COURSIER_CACHE="${COURSIER_CACHE:-/home/vscode/.cache/coursier}"' 'exec /usr/local/bin/cs launch sbt -- "$@"' > /usr/local/bin/sbt; \

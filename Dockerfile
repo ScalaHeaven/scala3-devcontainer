@@ -10,19 +10,12 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
       ca-certificates \
       curl \
-      gzip \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Coursier, then use it to install sbt.
 RUN set -eux; \
-    arch="$(dpkg --print-architecture)"; \
-    case "$arch" in \
-      amd64) coursier_arch="x86_64-pc-linux" ;; \
-      arm64) coursier_arch="aarch64-pc-linux" ;; \
-      *) echo "Unsupported architecture: $arch" >&2; exit 1 ;; \
-    esac; \
-    curl -fL "https://github.com/coursier/coursier/releases/latest/download/cs-${coursier_arch}.gz" \
-      | gzip -d > /usr/local/bin/cs; \
+    curl -fsSL "https://github.com/coursier/coursier/releases/latest/download/coursier" \
+      -o /usr/local/bin/cs; \
     chmod +x /usr/local/bin/cs; \
     cs install sbt --install-dir /usr/local/bin
 

@@ -91,6 +91,9 @@ Scala tools and JVM artifacts into the Coursier cache, normally under:
 /home/vscode/.cache/coursier
 ```
 
+The Dockerfiles install Coursier from the generic launcher release asset so the
+same setup works on both `amd64` and `arm64` Linux builders.
+
 The devcontainer uses Coursier to install:
 
 - `scala3-compiler`

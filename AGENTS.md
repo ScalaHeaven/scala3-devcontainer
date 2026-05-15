@@ -78,7 +78,8 @@ plugin, so do not assume `sbt scalafmtAll` is available.
 - Preserve non-root `vscode` user behavior in container changes unless the task
   explicitly requires a different model.
 - Prefer Coursier-based tool installation patterns already used in the
-  devcontainer and production Dockerfile.
+  devcontainer and production Dockerfile. Use the generic Coursier launcher
+  release asset so Linux `amd64` and `arm64` builders both work.
 - Keep Docker layer ordering cache-friendly: copy build metadata before source
   files when dependency resolution can be cached.
 - Update `README.md` whenever commands, tool versions, startup behavior, or the
