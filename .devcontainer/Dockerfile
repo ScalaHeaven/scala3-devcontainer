@@ -45,7 +45,7 @@ RUN set -eux; \
       | gzip -d > /usr/local/bin/cs; \
     chmod +x /usr/local/bin/cs; \
     mkdir -p "/home/${USERNAME}/.cache/coursier"; \
-    COURSIER_CACHE="/home/${USERNAME}/.cache/coursier" cs install scala3-compiler scala-cli --install-dir /usr/local/bin; \
+    COURSIER_CACHE="/home/${USERNAME}/.cache/coursier" cs install scala3-compiler scala-cli metals-mcp --install-dir /usr/local/bin; \
     printf '%s\n' '#!/usr/bin/env sh' 'export COURSIER_CACHE="${COURSIER_CACHE:-/home/vscode/.cache/coursier}"' 'exec /usr/local/bin/cs launch sbt -- "$@"' > /usr/local/bin/sbt; \
     chmod +x /usr/local/bin/sbt; \
     chown -R "${USERNAME}:${USERNAME}" "/home/${USERNAME}/.cache" || true
@@ -53,3 +53,8 @@ RUN set -eux; \
 USER ${USERNAME}
 
 RUN mkdir -p "/home/${USERNAME}/.sbt" "/home/${USERNAME}/.cache/coursier"
+
+RUN metals-mcp --version
+
+RUN COURSIER_CACHE="/home/${USERNAME}/.cache/coursier" \
+    cs fetch org.scala-sbt:sbt-launch:1.12.11 io.get-coursier.sbt:sbt-runner:0.2.0 >/dev/null

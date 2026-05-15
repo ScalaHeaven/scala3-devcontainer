@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "initializeCommand": "mkdir -p .metals .bsp target project/target && chmod -R a+rwX .metals .bsp target project/target 2>/dev/null || true",
+  "initializeCommand": "find . -type d -name .scala-build -prune -exec rm -rf {} + 2>/dev/null || true; mkdir -p .metals .bsp target project/target && chmod -R u+rwX .git .metals .bsp target project/target 2>/dev/null || true",
   "updateRemoteUserUID": true,
   "remoteUser": "vscode",
   "mounts": [
@@ -28,5 +28,5 @@
     }
   },
   "postStartCommand": "bash .devcontainer/post-start.sh",
-  "postCreateCommand": "cd /workspaces/scala3-devcontainer && mkdir -p .metals .bsp target project/target && (chmod -R a+rwX .metals .bsp target project/target 2>/dev/null || true) && node --version && npm --version && codex --version && scala-cli --version && scala3-compiler -version && sbt update && sbt sbtVersion"
+  "postCreateCommand": "cd /workspaces/scala3-devcontainer && START_METALS_MCP=0 bash .devcontainer/post-start.sh && node --version && npm --version && codex --version && scala-cli --version && scala3-compiler -version && sbt -Dsbt.batch=true update sbtVersion && bash .devcontainer/post-start.sh"
 }
